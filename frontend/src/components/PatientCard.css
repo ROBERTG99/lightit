@@ -1,0 +1,33 @@
+.patient-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    transition: box-shadow 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .patient-card:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+  
+  .card-details {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #333;
+  }
+  

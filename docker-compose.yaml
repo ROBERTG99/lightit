@@ -1,0 +1,48 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: patient_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=patientsdb
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  api:
+    build: 
+      context: ./backend
+      dockerfile: DOCKERFILE
+    container_name: patient_api
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db            # Hostname of the db service (Docker DNS)
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASS=postgres
+      - DB_NAME=patientsdb
+      - SMTP_USER=<your-mailtrap-username>
+      - SMTP_PASS=<your-mailtrap-password>
+      # If needed, specify SMTP_HOST=smtp.mailtrap.io, SMTP_PORT=2525 (or handle default in code)
+    ports:
+      - "8080:8080"
+    command: ["/app/wait-for-postgres.sh", "db", "./patient-api"] 
+
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: DOCKERFILE
+    container_name: patient_frontend
+    depends_on:
+      - api
+    ports:
+      - "3000:80"
+    # For development: you could replace this service with one running `npm start` if hot-reload is needed.
+
+volumes:
+  db-data:
