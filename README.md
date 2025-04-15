@@ -7,7 +7,7 @@ Una aplicación full-stack para el registro de pacientes. El backend está const
 - **Backend**
   - Go 1.20
   - PostgreSQL
-  - (Opcional) Docker
+  - Docker
 
 - **Frontend**
   - Node.js y npm
@@ -18,7 +18,7 @@ Una aplicación full-stack para el registro de pacientes. El backend está const
 
 
 1. **Base de Datos**  
-   Asegúrese de tener un servidor PostgreSQL en funcionamiento y actualice la configuración de conexión conforme a su entorno.
+   Asegurar que halla un servidor PostgreSQL en funcionamiento y actualice la configuración de conexión conforme a su entorno.
 
 2. **Ejecutar el Backend**
 
