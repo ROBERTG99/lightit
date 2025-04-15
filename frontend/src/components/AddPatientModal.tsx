@@ -14,7 +14,6 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ onClose, onAdded }) =
   const [phoneCountry, setPhoneCountry] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,9 +30,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ onClose, onAdded }) =
     setFullName(val);
     setErrors(prev => ({
       ...prev,
-      fullName: nameRegex.test(val)
-        ? ''
-        : 'Name must contain letters and spaces only.',
+      fullName: nameRegex.test(val) ? '' : 'Name must contain letters and spaces only.'
     }));
   };
 
@@ -42,9 +39,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ onClose, onAdded }) =
     setEmail(val);
     setErrors(prev => ({
       ...prev,
-      email: emailRegex.test(val)
-        ? ''
-        : 'Email must be a @gmail.com address.',
+      email: emailRegex.test(val) ? '' : 'Email must be a @gmail.com address.'
     }));
   };
 
@@ -53,9 +48,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ onClose, onAdded }) =
     setPhoneCountry(val);
     setErrors(prev => ({
       ...prev,
-      phoneCountry: phoneCountryRegex.test(val)
-        ? ''
-        : 'Country code must be numeric (optionally starting with +).',
+      phoneCountry: phoneCountryRegex.test(val) ? '' : 'Country code must be numeric (optionally starting with +).'
     }));
   };
 
@@ -64,9 +57,7 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ onClose, onAdded }) =
     setPhoneNumber(val);
     setErrors(prev => ({
       ...prev,
-      phoneNumber: phoneNumberRegex.test(val)
-        ? ''
-        : 'Phone number must be numeric.',
+      phoneNumber: phoneNumberRegex.test(val) ? '' : 'Phone number must be numeric.'
     }));
   };
 
@@ -124,43 +115,28 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ onClose, onAdded }) =
     if (!photoFile) {
       newErrors.photo = 'Please select a .jpg photo.';
     }
-
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       return;
     }
-
-    console.log('Submitting new patient:', {
-      fullName,
-      email,
-      phoneCountry,
-      phoneNumber,
-      photoFile,
-    });
-
+    console.log('Submitting new patient:', { fullName, email, phoneCountry, phoneNumber, photoFile });
     const formData = new FormData();
     formData.append('fullName', fullName);
     formData.append('email', email);
     formData.append('phoneCountry', phoneCountry);
     formData.append('phoneNumber', phoneNumber);
     if (photoFile) formData.append('photo', photoFile);
-
     console.log('FormData about to be sent:', Array.from(formData.entries()));
-
     try {
       setIsSubmitting(true);
       setSubmitMessage(null);
-
       const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
       const response = await fetch(`${apiUrl}/api/patients`, {
         method: 'POST',
         body: formData,
       });
-
       console.log('POST /api/patients response:', response);
-
       const result = await response.json();
-
       if (response.ok) {
         setSubmitMessage('Patient added successfully!');
         const newPatient: Patient = {
@@ -169,22 +145,19 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ onClose, onAdded }) =
           email,
           phoneCountry,
           phoneNumber,
-          photoURL: result.photoURL, 
+          photoURL: result.photoURL,
         };
         onAdded(newPatient);
-
         setTimeout(() => {
           setSubmitMessage(null);
           setIsSubmitting(false);
           onClose();
         }, 1000);
       } else {
-        console.error('Error data from server:');
         const errorMsg = result.error || 'Failed to add patient.';
         setSubmitMessage(`Error: ${errorMsg}`);
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
       setSubmitMessage('Error: Could not submit form.');
     } finally {
       setIsSubmitting(false);
@@ -192,133 +165,46 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({ onClose, onAdded }) =
   };
 
   return (
-    <div 
-      style={{
-        position: 'fixed',
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}
-    >
-      <div 
-        style={{
-          background: '#fff',
-          padding: '1.5rem',
-          borderRadius: '8px',
-          width: '400px',
-          maxHeight: '90vh',
-          overflowY: 'auto'
-        }}
-      >
+    <Modal visible={true} onClose={onClose}>
+      <div style={{ background: '#fff', padding: '1.5rem', borderRadius: '8px', width: '400px', maxHeight: '90vh', overflowY: 'auto' }}>
         <h2>Add Patient</h2>
         <form onSubmit={handleSubmit}>
-          {/* Full Name */}
           <div style={{ marginBottom: '1rem' }}>
             <label>Full Name:</label><br />
-            <input
-              type="text"
-              value={fullName}
-              onChange={handleNameChange}
-              style={{ width: '100%' }}
-            />
-            {errors.fullName && (
-              <div style={{ color: 'red', fontSize: '0.85rem' }}>{errors.fullName}</div>
-            )}
+            <input type="text" value={fullName} onChange={handleNameChange} style={{ width: '100%' }} />
+            {errors.fullName && <div style={{ color: 'red', fontSize: '0.85rem' }}>{errors.fullName}</div>}
           </div>
-
-          {/* Email */}
           <div style={{ marginBottom: '1rem' }}>
             <label>Email (must be @gmail.com):</label><br />
-            <input
-              type="email"
-              value={email}
-              onChange={handleEmailChange}
-              style={{ width: '100%' }}
-            />
-            {errors.email && (
-              <div style={{ color: 'red', fontSize: '0.85rem' }}>{errors.email}</div>
-            )}
+            <input type="email" value={email} onChange={handleEmailChange} style={{ width: '100%' }} />
+            {errors.email && <div style={{ color: 'red', fontSize: '0.85rem' }}>{errors.email}</div>}
           </div>
-
           <div style={{ marginBottom: '1rem' }}>
             <label>Phone:</label>
             <div style={{ display: 'flex', marginTop: '4px' }}>
-              <input
-                type="text"
-                placeholder="+1"
-                value={phoneCountry}
-                onChange={handlePhoneCountryChange}
-                style={{ width: '25%', marginRight: '0.5rem' }}
-              />
-              <input
-                type="text"
-                placeholder="1234567"
-                value={phoneNumber}
-                onChange={handlePhoneNumberChange}
-                style={{ width: '75%' }}
-              />
+              <input type="text" placeholder="+1" value={phoneCountry} onChange={handlePhoneCountryChange} style={{ width: '25%', marginRight: '0.5rem' }} />
+              <input type="text" placeholder="1234567" value={phoneNumber} onChange={handlePhoneNumberChange} style={{ width: '75%' }} />
             </div>
-            {errors.phoneCountry && (
-              <div style={{ color: 'red', fontSize: '0.85rem' }}>{errors.phoneCountry}</div>
-            )}
-            {errors.phoneNumber && (
-              <div style={{ color: 'red', fontSize: '0.85rem' }}>{errors.phoneNumber}</div>
-            )}
+            {errors.phoneCountry && <div style={{ color: 'red', fontSize: '0.85rem' }}>{errors.phoneCountry}</div>}
+            {errors.phoneNumber && <div style={{ color: 'red', fontSize: '0.85rem' }}>{errors.phoneNumber}</div>}
           </div>
-
           <div style={{ marginBottom: '1rem' }}>
             <label>Document Photo (.jpg only):</label><br />
-            <div
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              style={{
-                border: '2px dashed #ccc',
-                padding: '1rem',
-                textAlign: 'center',
-                marginTop: '4px'
-              }}
-            >
-              {photoFile ? (
-                <p>Selected file: {photoFile.name}</p>
-              ) : (
-                <p>Drag & drop a .jpg file here, or click below</p>
-              )}
-              <input
-                type="file"
-                accept=".jpg"
-                ref={fileInputRef}
-                onChange={handlePhotoChange}
-                style={{ display: 'none' }}
-              />
-              <button type="button" onClick={() => fileInputRef.current?.click()}>
-                {photoFile ? 'Change Photo' : 'Choose Photo'}
-              </button>
+            <div onDrop={handleDrop} onDragOver={handleDragOver} style={{ border: '2px dashed #ccc', padding: '1rem', textAlign: 'center', marginTop: '4px' }}>
+              {photoFile ? <p>Selected file: {photoFile.name}</p> : <p>Drag & drop a .jpg file here, or click below</p>}
+              <input type="file" accept=".jpg" ref={fileInputRef} onChange={handlePhotoChange} style={{ display: 'none' }} />
+              <Button type="button" onClick={() => fileInputRef.current?.click()}>{photoFile ? 'Change Photo' : 'Choose Photo'}</Button>
             </div>
-            {errors.photo && (
-              <div style={{ color: 'red', fontSize: '0.85rem' }}>{errors.photo}</div>
-            )}
+            {errors.photo && <div style={{ color: 'red', fontSize: '0.85rem' }}>{errors.photo}</div>}
           </div>
-
-          {/* Actions */}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1rem' }}>
-            <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Submitting...' : 'Add Patient'}
-            </button>
-            <button type="button" onClick={onClose} disabled={isSubmitting}>
-              Cancel
-            </button>
+            <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Submitting...' : 'Add Patient'}</Button>
+            <Button type="button" onClick={onClose} disabled={isSubmitting}>Cancel</Button>
           </div>
         </form>
-
-        {submitMessage && (
-          <div style={{ marginTop: '1rem', color: submitMessage.startsWith('Error') ? 'red' : 'green' }}>
-            {submitMessage}
-          </div>
-        )}
+        {submitMessage && <div style={{ marginTop: '1rem', color: submitMessage.startsWith('Error') ? 'red' : 'green' }}>{submitMessage}</div>}
       </div>
-    </div>
+    </Modal>
   );
 };
 
